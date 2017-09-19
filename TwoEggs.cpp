@@ -4,36 +4,36 @@ using namespace std;
 
 int findHighestFloor(int breakingPoint){ //function that finds the highest floor from which an egg can safely be dropped
   int eggsRemaining = 2;
-  int high = 100; //highest possible floor
-  int low = 1; //lowest possible floor
-  int mid; //mid point between highest and lowest possible floors
-  int highestFloor; //variable used to store floor that egg can safely be dropped from when found
+  int currentFloor = 0;
+  int dropInterval = 14;
+  int lastVisitedFloor = 1;
 
-  while (eggsRemaining > 1){ //while we have more than one egg, we continue using binary search method until be break one
-    mid = (high + low)/2;
-    if (mid < breakingPoint){
-
-      low = mid + 1; //if the breaking point floor of an egg is above the middle floor, we continue binary search
-    } else if (mid >= breakingPoint) { //if breaking point is below mid that means we broke an egg and can no longer use binary search
-
+  //because the problem contains a triangular series, we use the formula ((n*n)-n)/2, which rounds up to 14 for 100.
+  //Therefore, our initial drop interval will be 14 and we will decrease the interval by one each time until the first egg breaks
+  while (eggsRemaining >  1){
+    lastVisitedFloor = currentFloor; //save the floor that we lasted tried to drop an egg from where it did not break
+    currentFloor = currentFloor + dropInterval; //calculate next floor to test egg from
+    if (currentFloor >= breakingPoint){
       eggsRemaining = eggsRemaining - 1;
-      high = mid;
-
     }
+    dropInterval = dropInterval -1;
   }
+  currentFloor = lastVisitedFloor; //after first egg breaks go back to the last floor we had a successful drop from
+  while (eggsRemaining > 0){
 
-  for (int i = low; eggsRemaining > 0; i++){ //once we break an egg we test all floors from the bottom up until our final egg breaks
-    if (i == breakingPoint){
-      eggsRemaining = eggsRemaining - 1; // once our egg breaks we stop searching
-      highestFloor = i -1 ; //we return one minus the floor that the egg broke on
+    currentFloor = currentFloor +1; //if 2nd egg did not break, go up one floor and try again
+
+    if(currentFloor == breakingPoint){
+      eggsRemaining = eggsRemaining -1;
     }
+
+
   }
-
-
-  return highestFloor;
-
+  return currentFloor - 1; // we return the floor we were on before the 2nd egg break
 
 }
+
+
 
 int main(){
   int breakingPoint = 46; //The egg will break starting from this floor, so all floors below this number the egg will not break
